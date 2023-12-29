@@ -13,7 +13,7 @@ on:
 
 
 env:
-   SOLUTION_FILE: ./src/ActivityStitcher.
+   SOLUTION_FILE: ./src/ActivityStitcher.sln
 
 jobs:
   build:
