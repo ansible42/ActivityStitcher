@@ -1,0 +1,95 @@
+﻿@using Blazorise.Localization
+
+<Bar @bind-Visible="@topbarVisible" Breakpoint="Breakpoint.Desktop" Background="Background.Primary" ThemeContrast="ThemeContrast.Light">
+    <BarBrand>
+        <BarItem>
+            <BarLink To="">
+                <BarIcon Margin="Margin.Is2.FromEnd" IconName="IconName.Dashboard" />
+                ActivityStitcher
+            </BarLink>
+        </BarItem>
+    </BarBrand>
+    <BarToggler />
+    <BarMenu>
+        <BarStart>
+            <BarItem>
+                <BarLink To="/">Home</BarLink>
+            </BarItem>
+            <BarItem>
+                <BarDropdown>
+                    <BarDropdownToggle>Layout</BarDropdownToggle>
+                    <BarDropdownMenu>
+                        <BarDropdownItem Clicked="@(()=>OnLayoutTypeChecked("fixed-header"))">
+                            @if ( LayoutType == "fixed-header" )
+                            {
+                                <Icon Name="IconName.CheckCircle" TextColor="TextColor.Success" />
+                            }
+                            Fixed Header
+                        </BarDropdownItem>
+                        <BarDropdownItem Clicked="@(()=>OnLayoutTypeChecked("fixed-header-footer-only"))">
+                            @if ( LayoutType == "fixed-header-footer-only" )
+                            {
+                                <Icon Name="IconName.CheckCircle" TextColor="TextColor.Success" />
+                            }
+                            Fixed Header and Footer only
+                        </BarDropdownItem>
+                        <BarDropdownItem Clicked="@(()=>OnLayoutTypeChecked("sider-with-header-on-top"))">
+                            @if ( LayoutType == "sider-with-header-on-top" )
+                            {
+                                <Icon Name="IconName.CheckCircle" TextColor="TextColor.Success" />
+                            }
+                            Sider with Header on top
+                        </BarDropdownItem>
+                    </BarDropdownMenu>
+                </BarDropdown>
+            </BarItem>
+
+
+        </BarStart>
+        <BarEnd>
+            <BarItem>
+                <BarLink To="https://github.com/ansible42/ActivityStitcher">GitHub</BarLink>
+            </BarItem>
+        </BarEnd>
+    </BarMenu>
+</Bar>
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await SelectCulture( "en-US" );
+
+        await base.OnInitializedAsync();
+    }
+
+    Task SelectCulture( string name )
+    {
+        LocalizationService!.ChangeLanguage( name );
+
+        return Task.CompletedTask;
+    }
+
+    private bool topbarVisible = false;
+
+    Task OnLayoutTypeChecked( string layoutType )
+    {
+        LayoutType = layoutType;
+
+        return LayoutTypeChanged.InvokeAsync( layoutType );
+    }
+
+    [Parameter] public EventCallback<bool> ThemeEnabledChanged { get; set; }
+
+    [Parameter] public EventCallback<bool> ThemeGradientChanged { get; set; }
+
+    [Parameter] public EventCallback<bool> ThemeRoundedChanged { get; set; }
+
+    [Parameter] public EventCallback<string> ThemeColorChanged { get; set; }
+
+    [Parameter] public string? LayoutType { get; set; }
+
+    [Parameter] public EventCallback<string> LayoutTypeChanged { get; set; }
+
+    [Inject] protected ITextLocalizerService? LocalizationService { get; set; }
+
+    [CascadingParameter] protected Theme? Theme { get; set; }
+}

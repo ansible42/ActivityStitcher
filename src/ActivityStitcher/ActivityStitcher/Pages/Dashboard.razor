@@ -1,0 +1,55 @@
+﻿@page "/"
+@using System.IO
+@using ActivityFileStiticher
+@inject IVersionProvider VersionProvider
+
+<Paragraph>
+    This tool is intended to be used to stitch togeather GPX and other GPS activity files.  
+    This is a beta tool and is a work in progress. 
+</Paragraph>
+
+<Alert Color="Color.Info" Visible>
+    <Field>
+        <FileEdit Changed="@OnFileUpload" ShowMode="FilePickerShowMode.List" Filter=".gpx, .gprx" />
+    </Field>
+</Alert>
+
+@code {
+    public List<string> FilesToStitch { get; set; } = new();
+
+    async Task OnFileUpload(FileChangedEventArgs e)
+    {
+        try
+        {
+            foreach (var file in e.Files)
+            {
+                using (MemoryStream result = new())
+                {
+                    await file.OpenReadStream(long.MaxValue).CopyToAsync(result);
+                    // Once we reach this line it means the file is fully uploaded.
+                    // In this case we're going to offset to the beginning of file
+                    // so we can read it.
+                    result.Seek(0, SeekOrigin.Begin);
+
+                    // Use the stream reader to read the content of uploaded file,
+                    // in this case we can assume it is a textual file.
+                    using (var reader = new StreamReader(result))
+                    {
+                        var fileContent = await reader.ReadToEndAsync();
+                        this.FilesToStitch.Add(fileContent);
+
+                    }
+                }
+            }
+
+        }
+        catch (Exception exc)
+        {
+            Console.WriteLine(exc.Message);
+        }
+        finally
+        {
+            this.StateHasChanged();
+        }
+    }
+}
