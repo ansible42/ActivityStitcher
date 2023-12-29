@@ -10,10 +10,9 @@ on:
       - main
   workflow_dispatch:
 
-
-
 env:
    SOLUTION_FILE: ./src/ActivityStitcher.sln
+   SITE_PROJECT: ./src/ActivityStitcher/ActivityStitcher/ActivityStitcher.csproj
 
 jobs:
   build:
@@ -32,13 +31,13 @@ jobs:
         run: dotnet build $SOLUTION_FILE --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish $SOLUTION_FILE -c Release -o ${{env.DOTNET_ROOT}}/ActivityStitcher
+        run: dotnet publish $SITE_PROJECT -c Release -o ${{env.DOTNET_ROOT}}/Artifacts
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/ActivityStitcher
+          path: ${{env.DOTNET_ROOT}}/Artifacts
 
   deploy:
     runs-on: ubuntu-latest
